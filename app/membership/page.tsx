@@ -147,31 +147,30 @@ export default function MembershipPage() {
     {/* Content */}
     <div className="relative h-full px-12 py-16 flex flex-col justify-center max-w-xl">
       <p className="text-xs tracking-[0.25em] uppercase mb-4 opacity-80">
-        Spring Offer
+        Welcome to
       </p>
 
       <h1 className="text-4xl leading-tight font-semibold mb-6">
-        SPRING RESET:
+      Seven
         <br />
-        UNLOCK $500 IN VALUE
+        {/* UNLOCK $500 IN VALUE */}
       </h1>
 
       <p className="mb-4 text-sm">
-        Join now and receive a complimentary suite of services. Available
-        March only.
+       Where wellness meets exclusivity. Experience a high-end wellness club that seamlessly blends luxury with athletic performance, creating an environment designed to help you achieve your goals without compromise.
       </p>
 
-      <ul className="space-y-1 text-sm mb-8">
+      {/* <ul className="space-y-1 text-sm mb-8">
         <li>• 1 Equifit-style assessment</li>
         <li>• 2 personal training or 2 Pilates sessions</li>
         <li>• $200 credit towards retail or spa</li>
-      </ul>
+      </ul> */}
 
       <button
         type="button"
         className="text-xs underline underline-offset-4 text-white/80 hover:text-white w-fit"
       >
-        Terms &amp; Conditions
+        {/* Terms &amp; Conditions */}
       </button>
     </div>
   </section>
