@@ -339,41 +339,7 @@ function Step1SelectClub(
   const [creatingContact, setCreatingContact] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
-  const [country, setCountry] = useState(""); // Fallback
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-
-          try {
-            // Use a free geocoding API like BigDataCloud or OpenCage
-            const res = await fetch(
-              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-            );
-            const data = await res.json();
-            console.log("Detected country:", data.countryCode);
-            if (data.countryCode) {
-              setCountry(data.countryCode.toLowerCase());
-            }
-          } catch (err) {
-            console.error("Error detecting country:", err);
-          }
-        },
-        (err) => {
-          console.warn("Geolocation not allowed, fallback to browser language");
-          // fallback: browser language
-          const browserCountry = navigator.language.split("-")[1] || "us";
-          setCountry(browserCountry.toLowerCase());
-        }
-      );
-    } else {
-      // fallback if geolocation not supported
-      const browserCountry = navigator.language.split("-")[1] || "us";
-      setCountry(browserCountry.toLowerCase());
-        }
-      }, []);
+  const [country, setCountry] = useState("ae"); // Fallback
     
   const {
     data: locations = [],
@@ -579,8 +545,9 @@ function Step1SelectClub(
         <div className="space-y-1">
 
            {/* Phone input */}
-            {country ? (
+
               <PhoneInput
+                key = {country}
                 defaultCountry={country}
                 value={phone}
                 onChange={(phone) => onChangePhone(phone)}
@@ -590,7 +557,7 @@ function Step1SelectClub(
                   }}
      
               />
-            ) :""}
+          
 
           {phoneError && (
             <p id="phone-error" className="text-xs text-destructive">
