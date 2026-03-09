@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: 'Seven Club - A wellness club for real life',
   description: 'Movement, recovery and nourishment in a calm, considered space. Premium wellness and fitness in Dubai and Ibiza.',
   generator: 'v0.app',
+    icons: {
+    icon: '/images/icon.png',
+  },
 }
 
 export default function RootLayout({

@@ -10,20 +10,55 @@ export type LocationsFilter = {
 // Internal proxy route – keeps Zoho secrets on the server
 const INTERNAL_LOCATIONS_URL = '/api/zoho/locations'
 
+// function mapZohoLocationToLocation(record: any): Location {
+//   const rawName = record.Name ?? record.name ?? ''
+//   const rawCity = record.City ?? record.city ?? rawName
+//   const rawCountry = record.Country ?? record.country ?? ''
+//   const rawBrand = record.Brand ?? record.brand ?? 'Gray'
+
+//   return {
+//     id: String(record.id ?? record.ID ?? rawName),
+//     name: rawName,
+//     brand: String(Array.isArray(rawBrand) ? rawBrand[0] : rawBrand || 'Gray'),
+//     city: String(rawCity ?? ''),
+//     country: String(rawCountry ?? ''),
+//     // Simple heuristic: Ibiza -> EUR, else AED (can be refined later)
+//     currency: String(rawCity ?? '').toLowerCase().includes('ibiza') ? 'EUR' : 'AED',
+//   }
+// }
+
 function mapZohoLocationToLocation(record: any): Location {
   const rawName = record.Name ?? record.name ?? ''
   const rawCity = record.City ?? record.city ?? rawName
   const rawCountry = record.Country ?? record.country ?? ''
-  const rawBrand = record.Brand ?? record.brand ?? 'Gray'
+
+  const nameLower = String(rawName).toLowerCase()
+  const cityLower = String(rawCity).toLowerCase()
+
+  let brand = 'Seven'
+  let currency = 'AED'
+
+  // Brand logic
+  if (nameLower.includes('gray dubai')) {
+    brand = 'Gray'
+  } else if (cityLower.includes('dubai') || cityLower.includes('ibiza')) {
+    brand = 'Seven'
+  }
+
+  // Currency logic
+  if (cityLower.includes('ibiza')) {
+    currency = 'EUR'
+  } else {
+    currency = 'AED'
+  }
 
   return {
     id: String(record.id ?? record.ID ?? rawName),
     name: rawName,
-    brand: String(Array.isArray(rawBrand) ? rawBrand[0] : rawBrand || 'Gray'),
+    brand,
     city: String(rawCity ?? ''),
     country: String(rawCountry ?? ''),
-    // Simple heuristic: Ibiza -> EUR, else AED (can be refined later)
-    currency: String(rawCity ?? '').toLowerCase().includes('ibiza') ? 'EUR' : 'AED',
+    currency,
   }
 }
 
@@ -35,10 +70,11 @@ async function fetchLocations(filter?: LocationsFilter): Promise<Location[]> {
   }
 
   const json: any = await res.json()
+   console.log("Zoho API response:", json) // 👈 check raw response
   const records: any[] = Array.isArray(json?.data) ? json.data : []
-
+  console.log("Zoho records:", records) // 👈 check records
   let locations = records.map(mapZohoLocationToLocation)
-
+  console.log("Mapped locations:", locations) // 👈 check mapped result
   if (filter?.brand) {
     const brandLower = filter.brand.toLowerCase()
     locations = locations.filter((loc) => loc.brand.toLowerCase() === brandLower)

@@ -24,6 +24,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { Currency } from "lucide-react";
 
 type Step = 1 | 2 | 3;
 
@@ -329,7 +330,10 @@ function Step1SelectClub(
     zohoContactId,
     onContactCreated,
   } = props;
-
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState(""); // User input OTP
+  const [generatedOtp, setGeneratedOtp] = useState(""); // OTP generated & sent
+  const [otpVerified, setOtpVerified] = useState(false);
   const [creatingContact, setCreatingContact] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
@@ -382,10 +386,99 @@ function Step1SelectClub(
   }
 
   const genderError =
-    attempted && gender === null ? "Please select your gender" : null;
+  attempted && gender === null ? "Please select your gender" : null;
 
   const clubError = attempted && !selectedClub ? "Please select a club" : null;
 
+    async function handleCreateContact() {
+      if (!selectedClub) return;
+
+      setCreatingContact(true);
+      setContactError(null);
+
+      try {
+        const res = await fetch("/api/zoho/contacts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            phone,
+            locationId: selectedClub.id,
+            Currency: selectedClub.currency,
+            leadSource: "Website Membership",
+          }),
+        });
+
+        const data: any = await res.json().catch(() => ({}));
+        let memberId: string | null = null;
+
+        // Contact created successfully
+        if (res.ok && data?.data?.details?.id) {
+          memberId = String(data.data.details.id);
+          console.log("Use new Contact ID", memberId);
+        }
+
+        // Handle duplicate contact
+        if (!memberId) {
+          const duplicateError =
+            data?.details?.data?.[0]?.details?.errors?.find(
+              (err: any) => err.code === "DUPLICATE_DATA"
+            );
+          const duplicateId = duplicateError?.details?.duplicate_record?.id;
+          if (duplicateId) memberId = String(duplicateId);
+          console.log("Use Existing Contact ID", memberId);
+        }
+
+        if (!memberId) {
+          setContactError(
+            data?.message ||
+              "We could not save your details. Please try again later."
+          );
+          return;
+        }
+
+        // Continue flow
+        onContactCreated(memberId);
+        onNext();
+      } catch (err) {
+        setContactError(
+          "We could not save your details. Please try again later."
+        );
+      } finally {
+        setCreatingContact(false);
+      }
+    }
+    async function sendOtp(email: string) {
+      // Generate 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOtp(otp);
+      setOtpSent(true); // Show OTP input
+      try {
+        const res = await fetch("/api/zoho/zeptomail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp }),
+        });
+
+        if (!res.ok) throw new Error("Failed to send OTP");
+  
+      } catch (err) {
+        console.log("Error sending OTP. Please try again.");
+      }
+    }
+    function verifyOtpBeforeContact() {
+      //
+      if (otp === generatedOtp) {
+        setOtpVerified(true);
+        handleCreateContact(); // Proceed to create contact in Zoho
+      } else {
+            setContactError(
+            "Invalid OTP. Please try again."
+          );
+      }
+    }
   return (
     <div className="w-full max-w-none sm:max-w-2xl">
       <h2 className="text-xl sm:text-2xl font-semibold mb-2">
@@ -531,7 +624,7 @@ function Step1SelectClub(
                       : "border-border text-foreground hover:bg-muted"
                   }`}
                 >
-                  {brand}
+                  {brand} 
                 </button>
               ))}
             </div>
@@ -563,7 +656,7 @@ function Step1SelectClub(
                     <div>
                       <p className="text-sm font-medium">{club.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {[club.city, club.country].filter(Boolean).join(", ")}
+                        {[club.city, club.currency, club.country].filter(Boolean).join(", ")}
                       </p>
                     </div>
                     <span className="text-xs font-medium border px-3 py-1 rounded-full">
@@ -580,60 +673,49 @@ function Step1SelectClub(
           </p>
         )}
       </div>
+  
+        {otpSent && !otpVerified && (
+          <div className="flex w-full items-start gap-2 mt-4">
+            <div className="flex-1 space-y-1">
+              <Input
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6}
+              />
+           
+            </div>
+            
+            <Button
+              type="button"
+              onClick={verifyOtpBeforeContact}
+              className="h-11 px-6 font-semibold shadow-sm"
+              disabled={otp.length < 6 || creatingContact}
+            >
+              {creatingContact ? "Verifying..." : "Verify OTP"}
+            </Button>
+          </div>
+
+
+   )} 
 
       <Button
         type="button"
         className="mt-6 w-full h-11 min-h-[44px]"
-        disabled={creatingContact}
-        onClick={async () => {
-          setAttempted(true);
+        disabled={creatingContact || otpSent}
+        onClick={() => {
+          setAttempted(true); // ✅ trigger validation errors
           if (!isValid || !selectedClub) return;
-
-          // If we already have a Zoho contact id for this flow, skip re-creating.
-          if (zohoContactId) {
-            onNext();
-            return;
-          }
-
-          setCreatingContact(true);
-          setContactError(null);
-          try {
-            const res = await fetch("/api/zoho/contacts", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                phone,
-                locationId: selectedClub.id,
-                leadSource: "Website Membership",
-              }),
-            });
-            const data: any = await res.json().catch(() => ({}));
-
-            if (!res.ok || !data?.data?.details?.id) {
-              setContactError(
-                data?.message ||
-                  "We could not save your details in our system. Please try again in a moment.",
-              );
-              return;
-            }
-
-            const memberId = String(data.data.details.id);
-            onContactCreated(memberId);
-            onNext();
-          } catch (err) {
-            setContactError(
-              "We could not save your details in our system. Please try again in a moment.",
-            );
-          } finally {
-            setCreatingContact(false);
-          }
+          sendOtp(email); // Step 1: send OTP
         }}
       >
-        {creatingContact ? "Saving your details…" : "Continue to Membership"}
+        {creatingContact
+          ? "Saving your details…"
+          : otpSent
+          ? "OTP Sent"
+          : "Continue to Membership"}
       </Button>
+
 
       {contactError && (
         <p className="mt-3 text-xs text-destructive">{contactError}</p>
