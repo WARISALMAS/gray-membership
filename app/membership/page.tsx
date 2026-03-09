@@ -342,18 +342,39 @@ function Step1SelectClub(
   const [country, setCountry] = useState(""); // Fallback
 
   useEffect(() => {
-    fetch("/api/get-country")
-      .then(res => res.json())
-      .then(data => {
-        console.log("Detectedd country from server:", data.country);
-        setCountry(data.country || "us");
-      })
-      .catch(err => {
-        console.error("Error detecting country:", err);
-        setCountry("us");
-      });
-  }, []);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
 
+          try {
+            // Use a free geocoding API like BigDataCloud or OpenCage
+            const res = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            );
+            const data = await res.json();
+            console.log("Detected country:", data.countryCode);
+            if (data.countryCode) {
+              setCountry(data.countryCode.toLowerCase());
+            }
+          } catch (err) {
+            console.error("Error detecting country:", err);
+          }
+        },
+        (err) => {
+          console.warn("Geolocation not allowed, fallback to browser language");
+          // fallback: browser language
+          const browserCountry = navigator.language.split("-")[1] || "us";
+          setCountry(browserCountry.toLowerCase());
+        }
+      );
+    } else {
+      // fallback if geolocation not supported
+      const browserCountry = navigator.language.split("-")[1] || "us";
+      setCountry(browserCountry.toLowerCase());
+        }
+      }, []);
+    
   const {
     data: locations = [],
     isLoading,
