@@ -25,6 +25,8 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Currency } from "lucide-react";
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 type Step = 1 | 2 | 3;
 
@@ -337,6 +339,25 @@ function Step1SelectClub(
   const [creatingContact, setCreatingContact] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
+  const [country, setCountry] = useState(''); // Fallback
+
+   useEffect(() => {
+    fetch('https://ipapi.co')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.country_code) {
+          setCountry(data.country_code.toLowerCase());
+        }
+      })
+      .catch(() => console.log("Using default fallback"));
+  }, []);
+
+
+
+
+
+
 
   const {
     data: locations = [],
@@ -538,14 +559,35 @@ function Step1SelectClub(
           )}
         </div>
         <div className="space-y-1">
-          <Input
+          {/* <Input
             placeholder="Phone Number"
             value={phone}
             onChange={(e) => onChangePhone(e.target.value)}
             className={phoneError ? "border-destructive" : ""}
             aria-invalid={!!phoneError}
             aria-describedby={phoneError ? "phone-error" : undefined}
-          />
+          /> */}
+
+            {/* <PhoneInput
+              defaultCountry={country}
+              value={phone}
+              onChange={(phone) => onChangePhone(phone)}
+              inputClassName="w-full h-11 border-border rounded-md text-sm"
+              countrySelectorStyleProps={{
+                buttonClassName: "h-11 border-border rounded-l-md bg-muted/50",
+              }}
+            /> */}
+
+            <PhoneInput
+              key={country} 
+              defaultCountry={country}      
+              value={phone}
+              onChange={(phone) => onChangePhone(phone)}
+              inputClassName="w-full h-11 border-border rounded-md text-sm"
+              countrySelectorStyleProps={{
+                buttonClassName: "h-11 border-border rounded-l-md bg-muted/50",
+              }}
+            />
           {phoneError && (
             <p id="phone-error" className="text-xs text-destructive">
               {phoneError}
@@ -697,7 +739,7 @@ function Step1SelectClub(
           </div>
 
 
-   )} 
+        )} 
 
       <Button
         type="button"
