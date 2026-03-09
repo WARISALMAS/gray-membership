@@ -339,13 +339,13 @@ function Step1SelectClub(
   const [creatingContact, setCreatingContact] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
-  const [country, setCountry] = useState(''); // Fallback
+  const [country, setCountry] = useState(""); // Fallback
 
   useEffect(() => {
     fetch("/api/get-country")
       .then(res => res.json())
       .then(data => {
-        console.log("Detected country from server:", data.country);
+        console.log("Detectedd country from server:", data.country);
         setCountry(data.country || "us");
       })
       .catch(err => {
@@ -553,18 +553,24 @@ function Step1SelectClub(
             </p>
           )}
         </div>
+
+
         <div className="space-y-1">
 
-            <PhoneInput
-              key={country} 
-              defaultCountry={country}      
-              value={phone}
-              onChange={(phone) => onChangePhone(phone)}
-              inputClassName="w-full h-11 border-border rounded-md text-sm"
-              countrySelectorStyleProps={{
-                buttonClassName: "h-11 border-border rounded-l-md bg-muted/50",
-              }}
-            />
+           {/* Phone input */}
+            {country ? (
+              <PhoneInput
+                defaultCountry={country}
+                value={phone}
+                onChange={(phone) => onChangePhone(phone)}
+                  inputClassName="w-full h-14 border-border rounded-md text-sm"
+                  countrySelectorStyleProps={{
+                    buttonClassName: "h-11 border-border rounded-l-md bg-muted/50",
+                  }}
+     
+              />
+            ) :""}
+
           {phoneError && (
             <p id="phone-error" className="text-xs text-destructive">
               {phoneError}
