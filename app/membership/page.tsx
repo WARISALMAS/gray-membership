@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PaymentRequestButtonElement } from "@stripe/react-stripe-js";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Sheet,
@@ -478,6 +479,7 @@ function Step1SelectClub(
       }
     }
     function verifyOtpBeforeContact() {
+      //
       if (otp === generatedOtp) {
         setOtpVerified(true);
         handleCreateContact(); // Proceed to create contact in Zoho
@@ -722,7 +724,7 @@ function Step1SelectClub(
         className="mt-6 w-full h-11 min-h-[44px]"
         disabled={creatingContact || otpSent}
         onClick={() => {
-         setAttempted(true); // ✅ trigger validation errors
+        setAttempted(true); // ✅ trigger validation errors
          if (!isValid || !selectedClub) return;
           sendOtp(email); // Step 1: send OTP
         }}
@@ -784,41 +786,15 @@ function Step2ChooseMembership(props: {
 
   const allPlans: Plan[] =
     data?.plans.map((m: import("@/lib/api/types").Membership) => {
-      // const suffix =
-      //   m.duration === "Pass"
-      //     ? (() => {
-      //         const n = (m.name ?? "").toLowerCase();
-      //         if (n.includes("3 month")) return "/3 month";
-      //         if (n.includes("6 month")) return "/6 month";
-      //         if (n.includes("day")) return "/day";
-      //         if (n.includes("week")) return "/week";
-      //         if (n.includes("month")) return "/month";
-      //         return "/month";
-      //       })()
-      //     : "/year";
+   let priceLabel = "";
 
-      let priceLabel = "";
-
-if (m.duration === "Annual") {
-//   const monthly = m.price / 12;
-//   priceLabel = `${m.currency} ${monthly.toLocaleString()} /month`;
-// } else {
-//   const suffix = (() => {
-//     const n = (m.name ?? "").toLowerCase();
-//     if (n.includes("3 month")) return "/3 month";
-//     if (n.includes("6 month")) return "/6 month";
-//     if (n.includes("day")) return "/day";
-//     if (n.includes("week")) return "/week";
-//     if (n.includes("month")) return "/month";
-//     return "/month";
-//   })();
-
-const monthly = Math.round((m.price / 12) * 100) / 100;
-priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})} /month`;
-} else {
+  if (m.duration === "Annual") { 
+  const monthly = Math.round((m.price / 12) * 100) / 100;
+  priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} /month`;
+  } else {
   const suffix = (() => {
     const n = (m.name ?? "").toLowerCase();
     if (n.includes("3 month")) return "/3 month";
@@ -830,13 +806,14 @@ priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
   })();
 
   priceLabel = `${m.currency} ${m.price.toLocaleString()} ${suffix}`;
-}
+  }
       return {
         id: m.id,
         brand,
         name: m.name,
         price: priceLabel,
      //   price: `${m.currency} ${m.price.toLocaleString()} ${suffix}`,
+        annual_price:m.price,
         description: m.benefits.join(", ") || m.duration,
         amount: m.price,
         currency: m.currency,
@@ -1149,7 +1126,7 @@ function Step3ReviewPay(
   const [contactError, setContactError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
-
+  const [paymentRequest, setPaymentRequest] = useState<any>(null);
   const stripe = useStripe();
   const elements = useElements();
 
@@ -1306,7 +1283,7 @@ function Step3ReviewPay(
             <div>
               <h3 className="text-sm font-semibold">Membership summary</h3>
             </div>
-            <div className="text-left sm:text-right">
+            {/* <div className="text-left sm:text-right">
               <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 Total due today
               </p>
@@ -1317,7 +1294,7 @@ function Step3ReviewPay(
                     ? plan.price
                     : "—"}
               </p>
-            </div>
+            </div> */}
           </div>
           <div className="flex justify-between text-sm mb-2">
             <span className="text-muted-foreground">Club</span>
@@ -1328,8 +1305,8 @@ function Step3ReviewPay(
             <span>{plan?.name ?? "—"}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Price</span>
-            <span>{plan?.price ?? "—"}</span>
+            <span className="text-muted-foreground">Sub Total</span>
+            <span>{ plan?.currency } { baseAmount } /annual</span>
           </div>
               {plan && hasDiscount && (
             <>
@@ -1364,6 +1341,18 @@ function Step3ReviewPay(
               </div>
             </>
           )}
+
+            <div className="mt-2 pt-2 border-t border-border flex justify-between text-sm font-semibold">
+                <span>Grand Total</span>
+                <span>
+               
+              {plan && effectiveTotal > 0
+                  ? `${plan.currency} ${effectiveTotal.toLocaleString()} annually`
+                  : plan
+                    ? plan.price
+                    : "—"}
+                </span>
+              </div>
       
         </div>
 
@@ -1406,6 +1395,7 @@ function Step3ReviewPay(
             Secure card processing powered by Stripe.
           </p>
         </div>
+     
 
         {/* Coupon */}
         <div className="space-y-2">
