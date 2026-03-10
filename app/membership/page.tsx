@@ -43,6 +43,7 @@ interface Plan {
   amount: number;
   currency: string;
   duration?: "Annual" | "Pass";
+  tax_percentage?: number; // ✅ add this
 }
 
 type Gender = "male" | "female" | null;
@@ -57,20 +58,23 @@ const STRIPE_PK_GRAY =
 
 // Resolve publishable key purely based on club name
 function getStripePublishableKeyForClub(club?: Club | null): string {
+
   if (!club) {
     return "";
   }
+  // console.log("getStripePublishableKeyForClub");
+  // console.log(club);
 
   const rawName = club.name ?? "";
   const name = rawName.toLowerCase().trim();
 
   let key = "";
   let bucket: "dubai" | "ibiza" | "gray" | "unknown" = "unknown";
-
-  if (name.includes("gray")) {
+  console.log(name)
+  if (name=="gray dubai") {
     key = STRIPE_PK_GRAY;
     bucket = "gray";
-  } else if (name.includes("ibiza")) {
+  } else if (name =="ibiza") {
     key = STRIPE_PK_IBIZA;
     bucket = "ibiza";
   } else {
@@ -78,7 +82,8 @@ function getStripePublishableKeyForClub(club?: Club | null): string {
     key = STRIPE_PK_DUBAI;
     bucket = "dubai";
   }
-
+  console.log("key=========");
+  console.log(key)
   return key;
 }
 
@@ -94,6 +99,7 @@ export default function MembershipPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isClubSheetOpen, setIsClubSheetOpen] = useState(false);
   const [gender, setGender] = useState<Gender>(null);
+  // const [zohoContactId, setZohoContactId] = useState<string | null>(null);
   const [zohoContactId, setZohoContactId] = useState<string | null>(null);
 
   const publishableKey = getStripePublishableKeyForClub(selectedClub);
@@ -396,6 +402,11 @@ function Step1SelectClub(
     async function handleCreateContact() {
       if (!selectedClub) return;
 
+      // If we already have a Zoho contact id for this flow, skip re-creating.
+      if (zohoContactId) {
+        onNext();
+        return;
+      }
       setCreatingContact(true);
       setContactError(null);
 
@@ -472,7 +483,6 @@ function Step1SelectClub(
       }
     }
     function verifyOtpBeforeContact() {
-      //
       if (otp === generatedOtp) {
         setOtpVerified(true);
         handleCreateContact(); // Proceed to create contact in Zoho
@@ -717,8 +727,8 @@ function Step1SelectClub(
         className="mt-6 w-full h-11 min-h-[44px]"
         disabled={creatingContact || otpSent}
         onClick={() => {
-          setAttempted(true); // ✅ trigger validation errors
-          if (!isValid || !selectedClub) return;
+         setAttempted(true); // ✅ trigger validation errors
+         if (!isValid || !selectedClub) return;
           sendOtp(email); // Step 1: send OTP
         }}
       >
@@ -779,27 +789,64 @@ function Step2ChooseMembership(props: {
 
   const allPlans: Plan[] =
     data?.plans.map((m: import("@/lib/api/types").Membership) => {
-      const suffix =
-        m.duration === "Pass"
-          ? (() => {
-              const n = (m.name ?? "").toLowerCase();
-              if (n.includes("3 month")) return "/3 month";
-              if (n.includes("6 month")) return "/6 month";
-              if (n.includes("day")) return "/day";
-              if (n.includes("week")) return "/week";
-              if (n.includes("month")) return "/month";
-              return "/month";
-            })()
-          : "/year";
+      // const suffix =
+      //   m.duration === "Pass"
+      //     ? (() => {
+      //         const n = (m.name ?? "").toLowerCase();
+      //         if (n.includes("3 month")) return "/3 month";
+      //         if (n.includes("6 month")) return "/6 month";
+      //         if (n.includes("day")) return "/day";
+      //         if (n.includes("week")) return "/week";
+      //         if (n.includes("month")) return "/month";
+      //         return "/month";
+      //       })()
+      //     : "/year";
+
+      let priceLabel = "";
+
+if (m.duration === "Annual") {
+//   const monthly = m.price / 12;
+//   priceLabel = `${m.currency} ${monthly.toLocaleString()} /month`;
+// } else {
+//   const suffix = (() => {
+//     const n = (m.name ?? "").toLowerCase();
+//     if (n.includes("3 month")) return "/3 month";
+//     if (n.includes("6 month")) return "/6 month";
+//     if (n.includes("day")) return "/day";
+//     if (n.includes("week")) return "/week";
+//     if (n.includes("month")) return "/month";
+//     return "/month";
+//   })();
+
+const monthly = Math.round((m.price / 12) * 100) / 100;
+priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})} /month`;
+} else {
+  const suffix = (() => {
+    const n = (m.name ?? "").toLowerCase();
+    if (n.includes("3 month")) return "/3 month";
+    if (n.includes("6 month")) return "/6 month";
+    if (n.includes("day")) return "/day";
+    if (n.includes("week")) return "/week";
+    if (n.includes("month")) return "/month";
+    return "/month";
+  })();
+
+  priceLabel = `${m.currency} ${m.price.toLocaleString()} ${suffix}`;
+}
       return {
         id: m.id,
         brand,
         name: m.name,
-        price: `${m.currency} ${m.price.toLocaleString()} ${suffix}`,
+        price: priceLabel,
+     //   price: `${m.currency} ${m.price.toLocaleString()} ${suffix}`,
         description: m.benefits.join(", ") || m.duration,
         amount: m.price,
         currency: m.currency,
         duration: m.duration as "Annual" | "Pass",
+        tax_percentage: m.tax_percentage, // ✅ add this
       };
     }) ?? [];
 
@@ -1138,7 +1185,8 @@ function Step3ReviewPay(
   }
 
   const baseAmount = plan?.amount ?? 0;
-
+  // Tax %
+   const taxPercentage = plan?.tax_percentage ?? 0;
   const discountAmount = (() => {
     if (!plan || !couponInfo || !couponInfo.value) return 0;
     if (couponInfo.discountType === "percentage") {
@@ -1149,8 +1197,13 @@ function Step3ReviewPay(
 
   const totalAfterDiscount = Math.max(0, baseAmount - discountAmount);
   const hasDiscount = !!plan && discountAmount > 0;
-  const effectiveTotal = hasDiscount ? totalAfterDiscount : baseAmount;
+  let effectiveTotal = hasDiscount ? totalAfterDiscount : baseAmount;
+  // Tax calculation
+  const taxAmount = Math.round((effectiveTotal * taxPercentage) / 100);
 
+  // Final total
+  effectiveTotal = effectiveTotal + taxAmount;
+  
   const canSubmit = !!plan && !!club && !!nameOnCard.trim() && !submitting;
 
   const handleSubmit = async () => {
@@ -1264,7 +1317,7 @@ function Step3ReviewPay(
               </p>
               <p className="text-lg font-semibold">
                 {plan && effectiveTotal > 0
-                  ? `${plan.currency} ${effectiveTotal.toLocaleString()}`
+                  ? `${plan.currency} ${effectiveTotal.toLocaleString()} annually`
                   : plan
                     ? plan.price
                     : "—"}
@@ -1283,22 +1336,40 @@ function Step3ReviewPay(
             <span className="text-muted-foreground">Price</span>
             <span>{plan?.price ?? "—"}</span>
           </div>
-          {plan && hasDiscount && (
+              {plan && hasDiscount && (
             <>
-              <div className="flex justify-between text-sm mt-2">
-                <span className="text-muted-foreground">Coupon discount</span>
+              <div className="flex justify-between text-  sm mt-2">
+                <span className="text-muted-foreground">Discount</span>
                 <span className="text-destructive">
                   - {plan.currency} {discountAmount.toLocaleString()}
                 </span>
               </div>
-              <div className="mt-2 pt-2 border-t border-border flex justify-between text-sm font-semibold">
+              {/* <div className="mt-2 pt-2 border-t border-border flex justify-between text-sm font-semibold">
                 <span>Total after coupon</span>
                 <span>
                   {plan.currency} {totalAfterDiscount.toLocaleString()}
                 </span>
+              </div> */}
+            </>
+          )}
+          {plan && taxPercentage && (
+            <>
+              {/* <div className="flex justify-between text-sm mt-2">
+                <span className="text-muted-foreground">Coupon discount</span>
+                <span className="text-destructive">
+                  - {plan.currency} {discountAmount.toLocaleString()}
+                </span>
+              </div> */}
+              <div className="mt-2 pt-2 border-t border-border flex justify-between text-sm font-semibold">
+                <span>Tax</span>
+                <span>
+               
+                 ({taxPercentage.toLocaleString()}%) {plan.currency} {taxAmount.toLocaleString()}
+                </span>
               </div>
             </>
           )}
+      
         </div>
 
         <div className="border border-border rounded-xl p-4 sm:p-5 bg-card/40">

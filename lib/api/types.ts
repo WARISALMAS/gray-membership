@@ -33,6 +33,7 @@ export interface Membership {
   duration: string;
   price: number;
   currency: string;
+  tax_percentage: number;
 }
 
 /** Signup – POST /api/v1/members/auth/signup */
