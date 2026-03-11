@@ -73,7 +73,7 @@ export async function GET(request: Request) {
     const url = new URL(baseUrl)
     url.searchParams.set(
       'fields',
-      'Number_of_Days, Tax_Percentage, Name,App_Display_Name,Status,ShowOnApp,Brand,Location,Gender,Plan_Category,Price,Setup_Fee,Currency,Plan_Description,Subscription_Frequency',
+      'Number_of_Days,Tax_Percentage,Name,App_Display_Name,Status,ShowOnApp,Brand,Location,Gender,Plan_Category,Price,Setup_Fee,Currency,Plan_Description,Subscription_Frequency',
     )
     if (location) {
       url.searchParams.set('criteria', `Location:equals:${location}`)
@@ -180,7 +180,8 @@ export async function GET(request: Request) {
         price: p.Price,
       })),
     })
-
+   console.log("data =========================");
+   console.log(data)
     return NextResponse.json({ data })
   } catch (err) {
     console.error('Zoho subscription plans error', err)

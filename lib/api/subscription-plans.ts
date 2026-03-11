@@ -94,6 +94,13 @@ export async function fetchSubscriptionPlans(
       })
     : activeAndPriced
 
+    // Filter by allowed number_of_days
+  // const allowedDays = [30, 60, 90, 180, 365];
+  // const filteredByDays = filtered.filter((item) => {
+  //   const days = typeof item.Number_of_Days === 'number' ? item.Number_of_Days : 0;
+  //   return allowedDays.includes(days);
+  // });
+
   // Map to Membership and sort from cheapest to highest price
   const plans = filtered
     .map(mapPlanToMembership)

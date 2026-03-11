@@ -824,8 +824,7 @@ function Step2ChooseMembership(props: {
   //       number_of_days: m.number_of_days, // ✅ add this
   //     };
   //   }) ?? [];
-console.log(data);
-  const allPlans: Plan[] =
+const allPlans: Plan[] =
   data?.plans.map((m: import("@/lib/api/types").Membership) => {
     // Normalize duration
     const duration = m.duration === "Annual" ? "Annual" : "Pass";
@@ -833,8 +832,9 @@ console.log(data);
     // Use number_of_days dynamically for Pass, or 365 for Annual
     let number_of_days = duration === "Annual" ? 365 : m.number_of_days;
 
-    // Only allow valid number_of_days
-    if (duration === "Pass" && ![30, 90, 180].includes(number_of_days)) {
+    // Only allow valid number_of_days for Pass
+    const allowedPassDays = [1, 7, 30, 90, 180];
+    if (duration === "Pass" && !allowedPassDays.includes(number_of_days)) {
       number_of_days = 30; // fallback default
     }
 
@@ -847,12 +847,25 @@ console.log(data);
         maximumFractionDigits: 2,
       })} /month`;
     } else if (duration === "Pass") {
-      const months = number_of_days / 30; // 30→1, 90→3, 180→6
-      const monthly = Math.round((m.price / months) * 100) / 100;
-      priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })} /month`;
+      if (number_of_days === 1) {
+        priceLabel = `${m.currency} ${m.price.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} /day`;
+      } else if (number_of_days === 7) {
+        const weekly = Math.round((m.price / 7) * 100) / 100;
+        priceLabel = `${m.currency} ${weekly.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} /week`;
+      } else {
+        const months = number_of_days / 30; // 30→1, 90→3, 180→6
+        const monthly = Math.round((m.price / months) * 100) / 100;
+        priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} /month`;
+      }
     }
 
     return {
@@ -869,7 +882,6 @@ console.log(data);
       number_of_days,
     };
   }) ?? [];
-
   // For Dubai location: only show Annual plans (no Pass tab)
   const isDubai = selectedClub?.name === "Dubai";
 
@@ -2012,8 +2024,8 @@ function Step3ReviewPay(
 
                 console.log("Payment successful!");
                 console.log("Reference (PaymentIntent ID):", paymentReference);
-                console.log("Amount received:",currency);
-          //  window.location.href = "/thankyou?payment=success";
+                // console.log("Amount received:",currency);
+                window.location.href = "/thankyou?payment=success";
           }
         };
 
