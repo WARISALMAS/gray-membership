@@ -1941,53 +1941,59 @@ function Step3ReviewPay(
     
 
     // Sub-component used inside the Elements provider
- function CheckoutForm() {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [message, setMessage] = useState<string | null>(null);
+      function CheckoutForm() {
+        const stripe = useStripe();
+        const elements = useElements();
+        const [message, setMessage] = useState<string | null>(null);
+        const [ready, setReady] = useState(false); // <-- track when PaymentElement is ready
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!stripe || !elements) return;
+        const handleSubmit = async (e: React.FormEvent) => {
+          e.preventDefault();
+          if (!stripe || !elements) return;
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: { return_url: `${window.location.origin}/thankyou?payment=success` },
-      redirect: 'if_required', // important to prevent automatic redirect
-    });
+          const { error, paymentIntent } = await stripe.confirmPayment({
+            elements,
+            confirmParams: { return_url: `${window.location.origin}/thankyou?payment=success` },
+            redirect: 'if_required', // prevent automatic redirect
+          });
 
-    if (error) {
-      setMessage(error.message || "An error occurred");
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // redirect manually if confirmPayment didn't auto-redirect
-      window.location.href = "/thankyou?payment=success";
-    }
-  };
+          if (error) {
+            setMessage(error.message || "An error occurred");
+          } else if (paymentIntent && paymentIntent.status === "succeeded") {
+            window.location.href = "/thankyou?payment=success";
+          }
+        };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement
-      
-      
-      />
-      <button
-        disabled={!stripe}
-        style={{
-          marginTop: '20px',
-          width: '100%',
-          padding: '12px',
-          backgroundColor: '#0070f3',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-        
-      >
-        Pay Now
-      </button>
-      {message && <p style={{ color: 'red', marginTop: '10px' }}>{message}</p>}
-    </form>
-  );
-}
+        return (
+          <form onSubmit={handleSubmit}>
+            <PaymentElement
+              onReady={() => setReady(true)} // <-- only show button after ready
+            />
+            
+            {/* show button only when ready */}
+            {ready && (
+              <button
+                disabled={!stripe}
+                style={{
+                  marginTop: '20px',
+                  width: '100%',
+                  padding: '12px',
+                  backgroundColor: '#000',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                Pay Now
+              </button>
+            )}
+
+            {/* optional: show loading text while Stripe is initializing */}
+            {!ready && <p style={{ marginTop: '10px', color: '#6b7280' }}>Loading payment fields…</p>}
+
+            {message && <p style={{ color: 'red', marginTop: '10px' }}>{message}</p>}
+          </form>
+        );
+      }
 }
