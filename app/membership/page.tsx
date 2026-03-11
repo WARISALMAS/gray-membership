@@ -89,7 +89,7 @@ export default function MembershipPage() {
   const [step, setStep] = useState<Step>(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("waris@seven.family");
+  const [email, setEmail] = useState("");
   const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
   const [brandFilter, setBrandFilter] = useState<Brand>("Seven");
@@ -98,7 +98,7 @@ export default function MembershipPage() {
   const [isClubSheetOpen, setIsClubSheetOpen] = useState(false);
   const [gender, setGender] = useState<Gender>(null);
   // const [zohoContactId, setZohoContactId] = useState<string | null>(null);
-  const [zohoContactId, setZohoContactId] = useState<string | null>("5501504000737154095");
+  const [zohoContactId, setZohoContactId] = useState<string | null>("");
 
 
 
@@ -350,7 +350,7 @@ function Step1SelectClub(
   const allClubs: Club[] = locations.map((loc) => {
     const name = (loc.name ?? loc.city ?? "").toLowerCase();
     const derivedBrand: Brand =
-      name === "dubai" || name === "ibiza" ? "Seven" : "Gray";
+      name === "dubai" || name === "ibiza" ? "Seven" : "";
     return {
       ...loc,
       brand: derivedBrand,
@@ -358,7 +358,7 @@ function Step1SelectClub(
   });
 
   const filteredClubs: Club[] = allClubs.filter((club) =>
-    brandFilter === "Seven" ? club.brand === "Seven" : club.brand === "Gray",
+    brandFilter === "Seven" ? club.brand === "Seven" : club.brand === "",
   );
 
   const emailTrimmed = email.trim();
@@ -472,8 +472,8 @@ function Step1SelectClub(
       }
     }
     function verifyOtpBeforeContact() {
-      //otp === generatedOtp
-      if (true) {
+      //
+      if (otp === generatedOtp) {
         setOtpVerified(true);
         handleCreateContact(); // Proceed to create contact in Zoho
       } else {
@@ -718,8 +718,8 @@ function Step1SelectClub(
         className="mt-6 w-full h-11 min-h-[44px]"
         disabled={creatingContact || otpSent}
         onClick={() => {
-        // setAttempted(true); // ✅ trigger validation errors
-        //  if (!isValid || !selectedClub) return;
+        setAttempted(true); // ✅ trigger validation errors
+         if (!isValid || !selectedClub) return;
           sendOtp(email); // Step 1: send OTP
         }}
       >
@@ -761,7 +761,7 @@ function Step2ChooseMembership(props: {
     onNext,
   } = props;
 
-  const brand: Brand = selectedClub?.brand ?? "Gray";
+  const brand: Brand = selectedClub?.brand ?? "";
   const [activeTab, setActiveTab] = useState<"annual" | "pass">("annual");
   const [page, setPage] = useState(1);
 
@@ -1181,6 +1181,7 @@ function Step3ReviewPay(
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [creatingPayment, setCreatingPayment] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState<string | null>(null);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   // const stripe = useStripe();
   // const elements = useElements();
   const publishableKey = getStripePublishableKeyForClub(club);
@@ -1482,28 +1483,41 @@ function Step3ReviewPay(
           )}
         </div>
 
-        {/* {paymentError && (
-          <p className="text-xs text-destructive mt-1">{paymentError}</p>
-        )} */}
       </div>
-       {/* <div style={{ maxWidth: '500px', margin: '50px auto', padding: '20px', fontFamily: 'sans-serif' }}>
-        <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f4f4f5', borderRadius: '8px' }}>
-          <h2 style={{ color: '#111827', margin: '0 0 10px 0' }}>🛠️ Payment Integration Test</h2>
-          <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
-            <strong>Status:</strong> <span style={{ color: clientSecret ? '#10b981' : '#f59e0b' }}>
-              {clientSecret ? 'Ready' : 'Loading Stripe...'}
-            </span>
-          </p>
-        </div>
-  
-        {clientSecret && (
-          <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <CheckoutForm />
-          </Elements>
-        )}
-      </div> */}
+
+<div className="mt-4">
+  {/* Terms checkbox and label */}
+  <div className="flex items-start gap-2">
+    <input
+      type="checkbox"
+      id="terms"
+      checked={acceptedTerms}
+      onChange={(e) => setAcceptedTerms(e.target.checked)}
+      className="mt-1"
+    />
+    <label htmlFor="terms" className="text-sm text-gray-700">
+      I understand and accept the{" "}
+      <a
+        href="https://seven.club/legal"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        Terms and Conditions
+      </a>.
+    </label>
+  </div>
+
+  {/* Error message below */}
+  {paymentMessage && (
+    <p className="text-xs text-destructive mt-1">
+      {paymentMessage}
+    </p>
+  )}
+</div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
         <Button
           type="button"
           variant="outline"
@@ -1514,104 +1528,79 @@ function Step3ReviewPay(
         </Button>
 
 
-      <Button
-      type="button"
-      className="w-full sm:w-auto"
-      disabled={creatingPayment}
-      onClick={async () => {
-        if (creatingPayment) return;
+   <Button
+  type="button"
+  className="w-full sm:w-auto"
+  disabled={creatingPayment}
+  onClick={async () => {
+    if (creatingPayment) return;
 
-        setPaymentMessage(null);
+    setPaymentMessage(null);
 
-        if (!club || !plan) {
-          setPaymentMessage("Please select a club and plan.");
-          return;
-        }
+    if (!acceptedTerms) {
+      setPaymentMessage("You must accept the Terms and Conditions.");
+      return;
+    }
 
-        if (!publishableKey || !stripePromise) {
-          setPaymentMessage("Payment system is still loading. Please try again.");
-          return;
-        }
+    if (!club || !plan) {
+      setPaymentMessage("Please select a club and plan.");
+      return;
+    }
 
-        try {
-          setCreatingPayment(true);
+    if (!publishableKey || !stripePromise) {
+      setPaymentMessage("Payment system is still loading. Please try again.");
+      return;
+    }
 
-          const res = await fetch("/api/test-create-payment-intent", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              location: club?.name,
-              amount: effectiveTotal || baseAmount,
-              currency: plan?.currency,
-              description: plan?.name,
-              firstName,
-              lastName,
-              email,
-              phone,
-              zohoLocationId: club?.id,
-              planId: plan?.id,
-              planDuration: plan?.duration ?? "Annual",
-              couponId: couponInfo?.id ?? undefined,
-              couponDiscount: couponInfo?.value ?? undefined,
-              existingMemberId: memberId ?? undefined,
-            }),
-          });
+    try {
+      setCreatingPayment(true);
 
-          if (!res.ok) {
-            throw new Error("Failed to create payment.");
-          }
+      const res = await fetch("/api/stripe-create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          location: club?.name,
+          amount: effectiveTotal || baseAmount,
+          currency: plan?.currency,
+          description: plan?.name,
+          firstName,
+          lastName,
+          email,
+          phone,
+          zohoLocationId: club?.id,
+          planId: plan?.id,
+          planDuration: plan?.duration ?? "Annual",
+          couponId: couponInfo?.id ?? undefined,
+          couponDiscount: couponInfo?.value ?? undefined,
+          existingMemberId: memberId ?? undefined,
+        }),
+      });
 
-          const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to create payment.");
+      }
 
-          if (!data?.clientSecret) {
-            throw new Error("Invalid payment session.");
-          }
+      const data = await res.json();
 
-          setClientSecret(data.clientSecret);
-          setShowPaymentModal(true);
+      if (!data?.clientSecret) {
+        throw new Error("Invalid payment session.");
+      }
 
-        } catch (err) {
-          setPaymentMessage("Unable to start payment. Please try again.");
-        } finally {
-          setCreatingPayment(false);
-        }
-      }}
-    >
-      {creatingPayment ? "Preparing payment..." : "Complete Purchase"}
-    </Button>
+      setClientSecret(data.clientSecret);
+      setShowPaymentModal(true);
+
+    } catch (err) {
+      setPaymentMessage("Unable to start payment. Please try again.");
+    } finally {
+      setCreatingPayment(false);
+    }
+  }}
+>
+  {creatingPayment ? "Preparing payment..." : "Complete Purchase"}
+</Button>
       </div>
-        {paymentMessage && (
-          <p className="text-xs text-destructive mt-2">
-            {paymentMessage}
-          </p>
-        )}
-      {/* {showPaymentModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-    <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
-
-      <button
-        onClick={() => setShowPaymentModal(false)}
-        className="absolute top-3 right-3 text-gray-500 hover:text-black"
-      >
-        ✕
-      </button>
-
-      <h2 className="text-lg font-semibold mb-4">
-        Complete your payment
-      </h2>
-
-      {!clientSecret ? (
-        <p className="text-sm text-gray-500">Loading payment...</p>
-      ) : (
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
-          <CheckoutForm />
-        </Elements>
-      )}
-
-    </div>
-  </div>
-        )} */}
-
+ 
+    
      <AnimatePresence>
   {showPaymentModal && (
     <motion.div
@@ -1682,7 +1671,7 @@ function Step3ReviewPay(
                 const paymentReference = paymentIntent.id; // PaymentIntent ID
                 console.log("Payment successful!");
                 console.log("Reference (PaymentIntent ID):", paymentReference);
-                //createCRMsubscription(paymentReference);
+                createCRMsubscription(paymentReference);
                // window.location.href = "/thankyou?payment=success";
                setCompleted(true);
                setShowPaymentModal(false);
