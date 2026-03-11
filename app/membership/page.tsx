@@ -159,7 +159,12 @@ export default function MembershipPage() {
       </h1>
 
       <p className="mb-4 text-sm">
-       Where wellness meets exclusivity. Experience a high-end wellness club that seamlessly blends luxury with athletic performance, creating an environment designed to help you achieve your goals without compromise.
+      For people who live deliberately.
+   
+      </p>
+      <p className="mb-4 text-sm">
+
+       Every day.
       </p>
 
     
@@ -480,10 +485,10 @@ function Step1SelectClub(
   return (
     <div className="w-full max-w-none sm:max-w-2xl">
       <h2 className="text-xl sm:text-2xl font-semibold mb-2">
-        3 steps, and you&apos;re in.
+       3 steps to begin.
       </h2>
       <p className="text-sm text-muted-foreground mb-6 sm:mb-8">
-        Tell us how to reach you, then choose your club and membership.
+        Share your details, then choose your club and membership.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
@@ -604,7 +609,7 @@ function Step1SelectClub(
             >
               <span>
                 {selectedClub
-                  ? `${selectedClub.name} • ${selectedClub.city}`
+                  ? `${selectedClub.name}`
                   : "Select a Club to Join"}
               </span>
               <span className="text-lg leading-none">+</span>
@@ -665,7 +670,7 @@ function Step1SelectClub(
                     <div>
                       <p className="text-sm font-medium">{club.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {[club.city, club.country].filter(Boolean).join(", ")}
+                        {/* {[club.city, club.country].filter(Boolean).join(", ")} */}
                       </p>
                     </div>
                     <span className="text-xs font-medium border px-3 py-1 rounded-full">
@@ -722,7 +727,7 @@ function Step1SelectClub(
           ? "Saving your details…"
           : otpSent
           ? "OTP Sent"
-          : "Continue to Membership"}
+          : "Choose Membership"}
       </Button>
 
 
@@ -731,9 +736,7 @@ function Step1SelectClub(
       )}
 
       <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
-        By clicking Continue, you agree that we may contact you regarding
-        promotions, products, services, and other information that may interest
-        you.
+       By continuing, you agree to receive updates about membership, services, and events.
       </p>
     </div>
   );
@@ -1187,6 +1190,33 @@ function Step3ReviewPay(
     return loadStripe(publishableKey);
   }, [publishableKey]);
 
+
+
+  if (completed) {
+    return (
+      <div className="max-w-md space-y-4">
+        <div>
+          <h2 className="text-2xl font-semibold mb-1">You&apos;re all set.</h2>
+          <p className="text-sm text-muted-foreground">
+            Your payment was successful and your membership has been created.
+          </p>
+        </div>
+        <Button type="button" className="w-full" onClick={onRestart}>
+          Start over
+        </Button>
+            <div className="mt-4 p-4 border border-dashed border-gray-300 rounded-md text-center">
+              <p className="text-sm mb-2">
+                Download our app using the QR code:
+              </p>
+              <img
+                src="/images/seven-qr-code.png" 
+                alt="QR code to download the app"
+                className="mx-auto w-32 h-32"
+              />
+            </div>
+      </div>
+    );
+  }
 
   const baseAmount = plan?.amount ?? 0;
   // Tax %
@@ -1642,7 +1672,7 @@ function Step3ReviewPay(
 
           const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
-            confirmParams: { return_url: `${window.location.origin}/thankyou?payment=success` },
+            confirmParams: { return_url: `${window.location.origin}/` },
             redirect: 'if_required', // prevent automatic redirect
           });
 
@@ -1653,7 +1683,9 @@ function Step3ReviewPay(
                 console.log("Payment successful!");
                 console.log("Reference (PaymentIntent ID):", paymentReference);
                 //createCRMsubscription(paymentReference);
-                window.location.href = "/thankyou?payment=success";
+               // window.location.href = "/thankyou?payment=success";
+               setCompleted(true);
+               setShowPaymentModal(false);
           }
         };
 
