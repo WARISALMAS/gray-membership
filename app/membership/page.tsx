@@ -1832,26 +1832,30 @@ function Step3ReviewPay(
             />
             
             {/* show button only when ready */}
-            {ready && (
-              <button
-                disabled={!stripe}
-                style={{
-                  marginTop: '20px',
-                  width: '100%',
-                  padding: '12px',
-                  backgroundColor: '#000',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                }}
-              >
-                Pay Now
-              </button>
-            )}
+                {ready && (
+                  <button
+                    disabled={!stripe}
+                    style={{
+                      marginTop: '20px',
+                      width: '100%',
+                      padding: '12px',
+                      backgroundColor: !stripe ? '#c1bdb8' : '#a29a93', // disabled lighter
+                      color: '#e6e6e6',
+                      border: 'none',
+                      borderRadius: '50px',
+                      cursor: !stripe ? 'not-allowed' : 'pointer',
+                      fontFamily: 'var(--font-raleway)',
+                      fontWeight: 500,
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    // Remove onMouseEnter/onMouseLeave to avoid parser issues
+                  >
+                    Pay Now
+                  </button>
+                )}
 
             {/* optional: show loading text while Stripe is initializing */}
-            {!ready && <p style={{ marginTop: '10px', color: '#6b7280' }}>Loading payment fields…</p>}
+            {!ready && <p style={{ marginTop: '10px', color: '#6b7280' }}>Loading payment information…</p>}
 
             {message && <p style={{ color: 'red', marginTop: '10px' }}>{message}</p>}
           </form>
