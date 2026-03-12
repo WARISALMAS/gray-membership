@@ -150,11 +150,11 @@ export default function MembershipPage() {
     {/* Content */}
     <div className="relative h-full px-12 py-16 flex flex-col justify-center max-w-xl">
       <p className="text-xs tracking-[0.25em] uppercase mb-4 opacity-80 font-raleway">
-       Start Your Journey
+       Start your practice
       </p>
 
-      <h1 className="text-1xl leading-tight font-raleway mb-6">
-     Gray is a wellness club for real life
+      <h1 className="text-1xl leading-tight font-cinzel mb-6">
+     Gray
         <br />
         {/* UNLOCK $500 IN VALUE */}
       </h1>
@@ -162,9 +162,14 @@ export default function MembershipPage() {
       
 
       <p className="mb-4 text-sm font-raleway">
-       Experience movement, recovery, and nourishment in a calm, carefully designed environment. Our spaces bring together performance, restoration, and community to support your everyday wellbeing. Here, every detail is created to help you feel stronger in your body, clearer in your mind, and more present in your life.
-   
+         A softer expression of deliberate living.
       </p>
+
+        <p className="mb-4 text-sm font-raleway">
+         Designed for balance, movement and restoration in the rhythm of everyday life.
+      </p>
+
+      
   
 
     

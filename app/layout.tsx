@@ -27,7 +27,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Gray Wellness',
   description:
-    'Movement, recovery and nourishment in a calm, considered space. Premium wellness and fitness in Dubai and Ibiza.',
+    'Gray is a wellness club for real life.',
   generator: 'v0.app',
   icons: {
     icon: '/images/icon.webp',
