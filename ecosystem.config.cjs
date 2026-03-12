@@ -1,11 +1,11 @@
 module.exports = {
   apps: [
     {
-      name: "seven-members-app",
+      name: "gray-members-app",
       script: "npm",
       args: "start",
       env: {
-        PORT: 3007,
+        PORT: 3008,
         NODE_ENV: "production"
       }
     }
