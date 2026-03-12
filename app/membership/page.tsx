@@ -133,7 +133,7 @@ export default function MembershipPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background flex flex-col lg:flex-row">
+    <main style={{backgroundColor:"#d0ccc9", color:"#666666"}} className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Left: marketing panel */}
     <section className="relative hidden lg:block lg:w-1/2 bg-black text-white">
     {/* Background */}
@@ -483,8 +483,8 @@ function Step1SelectClub(
       }
     }
   return (
-    <div className="w-full max-w-none sm:max-w-2xl">
-      <h2 className="text-xl sm:text-2xl font-raleway mb-2">
+    <div className="w-full max-w-none sm:max-w-2xl" >
+      <h2 className="text-xl sm:text-2xl font-cinzel mb-2">
        3 steps to begin.
       </h2>
       <p className="text-sm text-muted-foreground mb-6 sm:mb-8 font-raleway">
@@ -493,7 +493,7 @@ function Step1SelectClub(
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 font-raleway">
         <div className="space-y-1">
-          <Input
+          <Input 
             placeholder="First Name"
             value={firstName}
             onChange={(e) => onChangeFirstName(e.target.value)}
@@ -546,16 +546,31 @@ function Step1SelectClub(
 
            {/* Phone input */}
 
-              <PhoneInput
-                key = {country}
+            <PhoneInput
+                key={country}
                 defaultCountry={country}
                 value={phone}
-                onChange={(phone) => onChangePhone(phone)}
-                  inputClassName="w-full h-14 border-border rounded-md text-sm"
-                  countrySelectorStyleProps={{
-                    buttonClassName: "h-11 border-border rounded-l-md bg-muted/50",
-                  }}
-     
+                onChange={onChangePhone}
+                inputClassName="w-full h-14 text-sm"
+                inputStyle={{
+                  backgroundColor: "#d0ccc9",
+                  border: "none",
+                  borderBottom: "2px solid #a7a5a3",
+                  borderRadius: 0,
+                  outline: "none",
+                  boxShadow: "none",
+                  padding: "0.5rem 0.75rem",
+                }}
+                countrySelectorStyleProps={{
+                  buttonStyle: {
+                    backgroundColor: "#d0ccc9",
+                    border: "none",
+                    borderBottom: "2px solid #a7a5a3",
+                    borderRadius: 0,
+                    outline: "none",
+                    boxShadow: "none",
+                  },
+                }}
               />
           
 
@@ -565,122 +580,156 @@ function Step1SelectClub(
             </p>
           )}
         </div>
-        <div className="space-y-1 font-raleway">
-          <p className="text-xs font-medium text-muted-foreground">Gender</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => onChangeGender("male")}
-              className={`flex-1 h-10 rounded-full border text-xs font-medium ${
-                gender === "male"
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-foreground hover:bg-muted"
-              }`}
-            >
-              Male
-            </button>
-            <button
-              type="button"
-              onClick={() => onChangeGender("female")}
-              className={`flex-1 h-10 rounded-full border text-xs font-medium ${
-                gender === "female"
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-foreground hover:bg-muted"
-              }`}
-            >
-              Female
-            </button>
-          </div>
-          {genderError && (
-            <p className="text-xs text-destructive">{genderError}</p>
-          )}
+      <div className="space-y-1 font-raleway">
+        <p className="text-xs font-medium text-[#a7a5a3]">Gender</p>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            onClick={() => onChangeGender("male")}
+            // Selected: Darker shade (#8b847d) | Unselected: Your standard bg (#a29a93)
+            className={`flex-1 h-10 rounded-full border-none text-xs font-medium transition-all ${
+              gender === "male"
+                ? "bg-[#8b847d] text-white shadow-inner" 
+                : "bg-[#a29a93] text-[#e6e6e6] opacity-70 hover:opacity-100"
+            }`}
+          >
+            Male
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onChangeGender("female")}
+            className={`flex-1 h-10 rounded-full border-none text-xs font-medium transition-all ${
+              gender === "female"
+                ? "bg-[#8b847d] text-white shadow-inner"
+                : "bg-[#a29a93] text-[#e6e6e6] opacity-70 hover:opacity-100"
+            }`}
+          >
+            Female
+          </Button>
         </div>
+        {genderError && (
+          <p className="text-xs text-destructive mt-1">{genderError}</p>
+          )}
+      </div>
+
       </div>
 
       <div className="space-y-1">
-        <Sheet open={isClubSheetOpen} onOpenChange={onClubSheetOpenChange}>
-          <SheetTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className={`w-full h-12 justify-between text-left font-medium ${clubError ? "border-destructive" : ""}`}
-              aria-invalid={!!clubError}
-              aria-describedby={clubError ? "club-error" : undefined}
+            <Sheet open={isClubSheetOpen} onOpenChange={onClubSheetOpenChange}>
+            <SheetTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className={`
+                  w-full
+                  h-12
+                  justify-between
+                  text-left
+                  font-medium
+                  ${clubError ? "border-destructive" : ""}
+                  font-raleway
+                `}
+                style={{
+                  backgroundColor: "#a29a93",
+                  color: "#e6e6e6",
+                  borderRadius: "50px",
+                }}
+                aria-invalid={!!clubError}
+                aria-describedby={clubError ? "club-error" : undefined}
+              >
+                <span>
+                  {selectedClub ? `${selectedClub.name}` : "Select a Club to Join"}
+                </span>
+                <span className="text-lg leading-none">+</span>
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent
+              side="right"
+              className="w-full sm:max-w-lg"
+              style={{ backgroundColor: "#d0ccc9", color: "#666666" }}
             >
-              <span className="font-raleway">
-                {selectedClub
-                  ? `${selectedClub.name}`
-                  : "Select a Club to Join"}
-              </span>
-              <span className="text-lg leading-none">+</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-lg">
-            <SheetHeader className="mb-6">
-              <SheetTitle className="sr-only">Select a club</SheetTitle>
-              <p className="text-xs text-muted-foreground font-raleway">
-                Choose your ideal home base. If you&apos;re torn between a few,
-                a membership advisor can help you find a perfect fit.
-              </p>
-            </SheetHeader>
-
-            {/* Brand pills – purely frontend filter */}
-            <div className="flex gap-2 mb-5 font-raleway">
-              {(["Gray"] as Brand[]).map((brand) => (
-                <button
-                  key={brand}
-                  type="button"
-                  onClick={() => onBrandFilterChange(brand)}
-                  className={`px-3 py-1.5 text-xs rounded-full border ${
-                    brandFilter === brand
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {brand}
-
-                </button>
-              ))}
-            </div>
-
-            {/* Simple list of clubs for chosen brand */}
-            <div className="space-y-3">
-              {isLoading && (
-                <p className="text-xs text-muted-foreground">
-                  Loading locations…
+              <SheetHeader className="mb-6">
+                <SheetTitle className="sr-only">Select a club</SheetTitle>
+                <p className="text-xs font-raleway" style={{ color: "#666666" }}>
+                  Choose your ideal home base. If you're torn between a few,
+                  a membership advisor can help you find a perfect fit.
                 </p>
-              )}
-              {isError && !isLoading && (
-                <p className="text-xs text-destructive">
-                  Unable to load locations. Please try again later.
-                </p>
-              )}
-              {!isLoading &&
-                !isError &&
-                filteredClubs.map((club) => (
-                  <button
-                    key={club.id}
-                    type="button"
-                    onClick={() => {
-                      onSelectClub(club);
-                      onClubSheetOpenChange(false);
-                    }}
-                    className="w-full flex items-center justify-between border border-border rounded-md px-4 py-3 text-left hover:border-foreground transition-colors"
-                  >
-                    <div>
-                      <p className="text-sm font-medium font-raleway">{club.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {/* {[club.city, club.country].filter(Boolean).join(", ")} */}
-                      </p>
-                    </div>
-                    <span className="text-xs font-medium border px-3 py-1 rounded-full font-raleway">
-                      Select
-                    </span>
-                  </button>
-                ))}
-            </div>
-          </SheetContent>
-        </Sheet>
+              </SheetHeader>
+
+              {/* Brand pills */}
+              <div className="flex gap-2 mb-5">
+                {(["Gray"] as Brand[]).map((brand) => {
+                  const isSelected = brandFilter === brand;
+                  return (
+                    <button
+                      key={brand}
+                      type="button"
+                      onClick={() => onBrandFilterChange(brand)}
+                      className={`px-3 py-1.5 text-xs rounded-full font-raleway`}
+                      style={{
+                        backgroundColor: isSelected ? "#a29a93" : "transparent",
+                        color: isSelected ? "#e6e6e6" : "#666666",
+                        border: isSelected ? "none" : "1px solid #a7a5a3",
+                        borderRadius: "50px",
+                      }}
+                    >
+                      {brand}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Clubs list */}
+              <div className="space-y-3">
+                {isLoading && (
+                  <p className="text-xs font-raleway" style={{ color: "#666666" }}>
+                    Loading locations…
+                  </p>
+                )}
+                {isError && !isLoading && (
+                  <p className="text-xs font-raleway" style={{ color: "#ff5555" }}>
+                    Unable to load locations. Please try again later.
+                  </p>
+                )}
+                {!isLoading &&
+                  !isError &&
+                  filteredClubs.map((club) => (
+                    <button
+                      key={club.id}
+                      type="button"
+                      onClick={() => {
+                        onSelectClub(club);
+                        onClubSheetOpenChange(false);
+                      }}
+                      className="w-full flex items-center justify-between rounded-md px-4 py-3 text-left font-raleway"
+                      style={{
+                        backgroundColor: "#a29a93",
+                        color: "#e6e6e6",
+                        borderRadius: "50px",
+                      }}
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{club.name}</p>
+                        <p className="text-xs" style={{ color: "#e6e6e6" }}>
+                          {/* {[club.city, club.country].filter(Boolean).join(", ")} */}
+                        </p>
+                      </div>
+                      <span
+                        className="text-xs font-medium px-3 py-1 rounded-full font-raleway"
+                        style={{
+                          backgroundColor: "#a29a93",
+                          color: "#e6e6e6",
+                          borderRadius: "50px",
+                        }}
+                      >
+                        Select
+                      </span>
+                    </button>
+                  ))}
+              </div>
+            </SheetContent>
+          </Sheet>
         {clubError && (
           <p id="club-error" className="text-xs text-destructive mt-1">
             {clubError}
@@ -924,7 +973,7 @@ const allPlans: Plan[] =
 
   return (
     <div className="w-full max-w-none sm:max-w-2xl font-raleway">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-2">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-2 font-cinzel">
         Choose Membership
       </h2>
       <p className="text-sm text-muted-foreground mb-4">
@@ -1024,26 +1073,51 @@ const allPlans: Plan[] =
           })()}
         </div>
       ) : (
-        <Tabs
+          <Tabs
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as "annual" | "pass")}
           className="mb-6 w-full"
         >
-          <TabsList className="mb-4 w-full grid grid-cols-2">
-            <TabsTrigger value="annual" className="text-xs sm:text-sm">
+          {/* Tabs list */}
+          <TabsList
+            className="mb-4 w-full grid grid-cols-2 gap-2 p-0"
+            style={{
+              backgroundColor: "#a29a93", // container background
+              borderRadius: "50px",
+              padding: "2px",
+            }}
+          >
+            <TabsTrigger
+              value="annual"
+              className="text-xs sm:text-sm font-raleway w-full py-2 text-center transition-colors rounded-full"
+              style={{
+                backgroundColor: activeTab === "annual" ? "#8b847c" : "#a29a93",
+                color: "#e6e6e6",
+                borderRadius: "50px",
+              }}
+            >
               Annual
             </TabsTrigger>
-            <TabsTrigger value="pass" className="text-xs sm:text-sm">
+            <TabsTrigger
+              value="pass"
+              className="text-xs sm:text-sm font-raleway w-full py-2 text-center transition-colors rounded-full"
+              style={{
+                backgroundColor: activeTab === "pass" ? "#8b847c" : "#a29a93",
+                color: "#e6e6e6",
+                borderRadius: "50px",
+              }}
+            >
               Pass
             </TabsTrigger>
           </TabsList>
 
+          {/* Tabs content */}
           {(["annual", "pass"] as const).map((tab) => {
             const plansForTab = tab === "annual" ? annualPlans : passPlans;
 
             if (isLoading) {
               return (
-                <TabsContent key={tab} value={tab}>
+                <TabsContent key={tab} value={tab} className="p-0">
                   <p className="text-sm text-muted-foreground py-4">
                     Loading plans…
                   </p>
@@ -1053,7 +1127,7 @@ const allPlans: Plan[] =
 
             if (plansForTab.length === 0) {
               return (
-                <TabsContent key={tab} value={tab}>
+                <TabsContent key={tab} value={tab} className="p-0">
                   <p className="text-sm text-muted-foreground py-4">
                     No {tab} plans available for this location.
                   </p>
@@ -1063,28 +1137,26 @@ const allPlans: Plan[] =
 
             const totalPages = Math.max(
               1,
-              Math.ceil(plansForTab.length / PLANS_PER_PAGE),
+              Math.ceil(plansForTab.length / PLANS_PER_PAGE)
             );
             const safeTabPage = Math.min(page, totalPages || 1);
             const start = (safeTabPage - 1) * PLANS_PER_PAGE;
-            const visiblePlans = plansForTab.slice(
-              start,
-              start + PLANS_PER_PAGE,
-            );
+            const visiblePlans = plansForTab.slice(start, start + PLANS_PER_PAGE);
 
             return (
-              <TabsContent key={tab} value={tab}>
-                <div className="space-y-4">
+              <TabsContent key={tab} value={tab} className="p-0">
+                <div className="space-y-2">
                   {visiblePlans.map((plan) => (
                     <button
                       key={plan.id}
                       type="button"
                       onClick={() => onSelectPlan(plan)}
-                      className={`w-full text-left border-2 rounded-md px-4 sm:px-5 py-3 sm:py-4 transition-colors ${
+                      className={`w-full text-left px-4 sm:px-5 py-3 sm:py-4 font-raleway transition-colors ${
                         selectedPlan?.id === plan.id
-                          ? "border-foreground"
-                          : "border-border hover:border-foreground/60"
+                          ? "bg-[#a29a93] text-[#e6e6e6]"
+                          : "bg-[#d0ccc9] text-[#666666] hover:bg-[#c5c1bb]"
                       }`}
+                      style={{ border: "none", boxShadow: "none", borderRadius: 0 }}
                     >
                       <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:gap-4">
                         <div className="min-w-0">
@@ -1095,41 +1167,51 @@ const allPlans: Plan[] =
                             {plan.description}
                           </p>
                         </div>
-                        <p className="text-sm font-semibold shrink-0">
-                          {plan.price}
-                        </p>
+                        <p className="text-sm font-semibold shrink-0">{plan.price}</p>
                       </div>
                     </button>
                   ))}
                 </div>
+
+                {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="mt-4 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <div className="mt-4 flex items-center justify-between gap-2 text-xs">
                     <button
                       type="button"
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={safeTabPage === 1}
-                      className={`min-h-[44px] px-4 py-2 sm:py-1 border rounded touch-manipulation ${
+                      className={`min-h-[44px] px-4 py-2 sm:py-1 text-center font-raleway transition-colors ${
                         safeTabPage === 1
                           ? "opacity-40 cursor-not-allowed"
-                          : "hover:bg-muted cursor-pointer"
+                          : "hover:bg-[#8b847c]"
                       }`}
+                      style={{
+                        backgroundColor: "#a29a93",
+                        color: "#e6e6e6",
+                        borderRadius: "50px",
+                        border: "none",
+                      }}
                     >
                       Previous
                     </button>
-                    <span className="text-center">
+                    <span className="text-center text-[#666666]">
                       Page {safeTabPage} of {totalPages}
                     </span>
                     <button
                       type="button"
-                      onClick={() =>
-                        setPage((p) => Math.min(totalPages, p + 1))
-                      }
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                       disabled={safeTabPage === totalPages}
-                      className={`min-h-[44px] px-4 py-2 sm:py-1 border rounded touch-manipulation ${
+                      className={`min-h-[44px] px-4 py-2 sm:py-1 text-center font-raleway transition-colors ${
                         safeTabPage === totalPages
                           ? "opacity-40 cursor-not-allowed"
-                          : "hover:bg-muted cursor-pointer"
+                          : "hover:bg-[#8b847c]"
                       }`}
+                      style={{
+                        backgroundColor: "#a29a93",
+                        color: "#e6e6e6",
+                        borderRadius: "50px",
+                        border: "none",
+                      }}
                     >
                       Next
                     </button>
@@ -1143,13 +1225,19 @@ const allPlans: Plan[] =
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
         <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="w-full sm:w-auto font-raleway"
-        >
-          Back
-        </Button>
+        type="button"
+        variant="outline"
+        onClick={onBack}
+        className="w-full sm:w-auto font-raleway"
+        style={{
+          backgroundColor: "#a29a93",
+          color: "#e6e6e6",
+          borderRadius: "50px",
+          border: "none",
+        }}
+      >
+        Back
+      </Button>
         <Button
           type="button"
           className="w-full sm:flex-1 min-h-[44px] font-raleway"
@@ -1222,7 +1310,7 @@ function Step3ReviewPay(
     return (
       <div className="max-w-md space-y-4 font-raleway">
         <div>
-          <h2 className="text-2xl font-semibold mb-1">You&apos;re all set.</h2>
+          <h2 className="text-2xl font-semibold mb-1 font-cinzel">You&apos;re all set.</h2>
           <p className="text-sm text-muted-foreground">
             Your membership has been created.
           </p>
@@ -1350,165 +1438,192 @@ function Step3ReviewPay(
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
         Step 3 of 3
      </p>
-       <h2 className="text-xl sm:text-2xl font-semibold">Review and Pay</h2>
+       <h2 className="text-xl sm:text-2xl font-semibold font-cinzel">Review and Pay</h2>
        <p className="text-xs text-muted-foreground">
          Confirm your membership details and complete your secure payment.
        </p>
     </div>
 
 
-      <div className="space-y-4">
-        <div className="border border-border rounded-xl p-4 sm:p-5 bg-card/60 shadow-sm">
-         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4 mb-3">
-            <div>
-              <h3 className="text-sm font-semibold">Membership summary</h3>
-            </div>
- 
-         </div>
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Club</span>
-             <span>{club ? `${club.name}` : "—"}</span>
-          </div>
-          <div className="flex justify-between text-sm mb-2">
-             <span className="text-muted-foreground">Plan</span>
-           <span>{plan?.name ?? "—"}</span>
-           </div>
-          <div className="flex justify-between text-sm">
-             <span className="text-muted-foreground">Sub Total</span>
-            <span>{ plan?.currency } { baseAmount } </span>
-          </div>
-             {plan && hasDiscount && (
-            <>
-              <div className="flex justify-between text-  sm mt-2">
-                <span className="text-muted-foreground">Discount</span>
-                <span className="text-destructive">
-                  - {plan.currency} {discountAmount.toLocaleString()}
-                </span>
-              </div>
-      
-            </>
-          )}
-          {plan && taxPercentage && (
-            <>
-              <div className="mt-2 pt-2 border-t border-border flex justify-between text-sm font-semibold">
-                <span>Tax</span>
-                <span>
-               
-                 ({taxPercentage.toLocaleString()}%) {plan.currency} {taxAmount.toLocaleString()}
-                </span>
-              </div>
-            </>
-          )}
-
-            <div className="mt-2 pt-2 border-t border-border flex justify-between text-sm font-semibold">
-                <span>Grand Total</span>
-                <span>
-               
-              {plan && effectiveTotal > 0
-                  ? `${plan.currency} ${effectiveTotal.toLocaleString()} / ${plan.planType}`
-                  : plan
-                    ? plan.price
-                    : "—"}
-                </span>
-              </div>
-      
-        </div>
-
-        <div className="border border-border rounded-xl p-4 sm:p-5 bg-card/40">
-          <h3 className="text-sm font-semibold mb-3">Your details</h3>
-          <dl className="space-y-2 sm:space-y-1 text-sm">
-            <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
-              <dt className="text-muted-foreground shrink-0">Name</dt>
-              <dd className="break-words">
-                {[firstName, lastName].filter(Boolean).join(" ") || "—"}
-              </dd>
-            </div>
-            <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
-              <dt className="text-muted-foreground shrink-0">Email</dt>
-              <dd className="break-all">{email || "—"}</dd>
-            </div>
-            <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
-              <dt className="text-muted-foreground shrink-0">Phone</dt>
-              <dd>{phone || "—"}</dd>
-            </div>
-          </dl>
-          {contactError && (
-            <p className="mt-2 text-xs text-destructive">{contactError}</p>
-          )}
-        </div>
+ <div className="space-y-4" style={{ backgroundColor: "#d0ccc9", color: "#666666", padding: "1rem" }}>
+  {/* Membership Summary */}
+  <div
+    className="rounded-xl p-4 sm:p-5"
+    style={{
+      backgroundColor: "rgba(162, 154, 147, 0.6)", // semi-transparent like previous bg-card/60
+      border: "none",
+    }}
+  >
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4 mb-3">
+      <div>
+        <h3 className="text-sm font-semibold">Membership summary</h3>
       </div>
+    </div>
 
-      <div className="border border-border rounded-xl p-4 sm:p-5 space-y-4 bg-card/80 shadow-sm">
+    <div className="flex justify-between text-sm mb-2">
+      <span className="text-[#666666]">Club</span>
+      <span>{club ? `${club.name}` : "—"}</span>
+    </div>
 
-     
+    <div className="flex justify-between text-sm mb-2">
+      <span className="text-[#666666]">Plan</span>
+      <span>{plan?.name ?? "—"}</span>
+    </div>
 
-       
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Coupon
-          </label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter coupon code"
-              value={couponCode}
-              onChange={(e) => {
-                setCouponCode(e.target.value.trim());
-                setCouponError(null);
-              }}
-              className="flex-1"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              disabled={!couponCode || couponApplying}
-              onClick={async () => {
-                if (!couponCode || !plan) return;
-                setCouponApplying(true);
-                setCouponError(null);
-                try {
-                  const res = await fetch("/api/zoho/coupons/validate", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      code: couponCode,
-                      planId: plan.id,
-                      planPrice: plan.amount,
-                    }),
-                  });
-                  const data = await res.json();
-                  if (!res.ok || !data.valid) {
-                    setCouponInfo(null);
-                    setCouponError(data.message || "Coupon is not valid.");
-                  } else {
-                    setCouponInfo({
-                      id: data.couponId,
-                      name: data.name,
-                      discountType: data.discountType,
-                      value: data.value ?? data.discount,
-                    });
-                  }
-                } catch (err) {
-                  setCouponInfo(null);
-                  setCouponError("Unable to apply coupon. Please try again.");
-                } finally {
-                  setCouponApplying(false);
-                }
-              }}
-            >
-              {couponApplying ? "Applying…" : "Apply"}
-            </Button>
-          </div>
-          {couponInfo && (
-            <p className="text-xs text-green-700 dark:text-green-400">
-              Coupon “{couponCode}” applied.
-            </p>
-          )}
-          {couponError && (
-            <p className="text-xs text-destructive">{couponError}</p>
-          )}
-        </div>
+    <div className="flex justify-between text-sm">
+      <span className="text-[#666666]">Sub Total</span>
+      <span>{plan?.currency} {baseAmount}</span>
+    </div>
 
+    {plan && hasDiscount && (
+      <div className="flex justify-between text-sm mt-2">
+        <span className="text-[#666666]">Discount</span>
+        <span className="text-destructive">
+          - {plan.currency} {discountAmount.toLocaleString()}
+        </span>
       </div>
+    )}
+
+    {plan && taxPercentage && (
+      <div className="mt-2 pt-2 flex justify-between text-sm font-semibold" style={{ borderTop: "1px solid #a7a5a3" }}>
+        <span>Tax</span>
+        <span>
+          ({taxPercentage.toLocaleString()}%) {plan.currency} {taxAmount.toLocaleString()}
+        </span>
+      </div>
+    )}
+
+    <div className="mt-2 pt-2 flex justify-between text-sm font-semibold" style={{ borderTop: "1px solid #a7a5a3" }}>
+      <span>Grand Total</span>
+      <span>
+        {plan && effectiveTotal > 0
+          ? `${plan.currency} ${effectiveTotal.toLocaleString()} / ${plan.planType}`
+          : plan
+            ? plan.price
+            : "—"}
+      </span>
+    </div>
+  </div>
+
+  {/* User Details */}
+  <div
+    className="rounded-xl p-4 sm:p-5"
+    style={{ backgroundColor: "rgba(162, 154, 147, 0.6)", border: "none" }}
+  >
+    <h3 className="text-sm font-semibold mb-3">Your details</h3>
+    <dl className="space-y-2 sm:space-y-1 text-sm">
+      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
+        <dt className="text-[#666666] shrink-0">Name</dt>
+        <dd className="break-words">{[firstName, lastName].filter(Boolean).join(" ") || "—"}</dd>
+      </div>
+      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
+        <dt className="text-[#666666] shrink-0">Email</dt>
+        <dd className="break-all">{email || "—"}</dd>
+      </div>
+      <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
+        <dt className="text-[#666666] shrink-0">Phone</dt>
+        <dd>{phone || "—"}</dd>
+      </div>
+    </dl>
+    {contactError && (
+      <p className="mt-2 text-xs text-destructive">{contactError}</p>
+    )}
+  </div>
+</div>
+
+<div
+  className="rounded-xl p-4 sm:p-5 space-y-4"
+  style={{
+    backgroundColor: "#d0ccc9", // matches page bg
+    color: "#666666",           // text color
+    borderRadius: "16px",
+  }}
+>
+  {/* Coupon Section */}
+  <div className="space-y-2">
+    <label
+      className="block text-xs font-semibold uppercase tracking-wide"
+      style={{ color: "#666666" }}
+    >
+      Coupon
+    </label>
+    <div className="flex gap-2">
+      <Input
+        placeholder="Enter coupon code"
+        value={couponCode}
+        onChange={(e) => {
+          setCouponCode(e.target.value.trim());
+          setCouponError(null);
+        }}
+        className="flex-1"
+        style={{
+          border: "none",
+          borderBottom: "2px solid #a7a5a3",
+          borderRadius: 0,
+          backgroundColor: "#d0ccc9",
+          color: "#666666",
+          padding: "0.5rem 0.75rem",
+        }}
+      />
+      <Button
+        type="button"
+        variant="outline"
+        disabled={!couponCode || couponApplying}
+        onClick={async () => {
+          if (!couponCode || !plan) return;
+          setCouponApplying(true);
+          setCouponError(null);
+          try {
+            const res = await fetch("/api/zoho/coupons/validate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                code: couponCode,
+                planId: plan.id,
+                planPrice: plan.amount,
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.valid) {
+              setCouponInfo(null);
+              setCouponError(data.message || "Coupon is not valid.");
+            } else {
+              setCouponInfo({
+                id: data.couponId,
+                name: data.name,
+                discountType: data.discountType,
+                value: data.value ?? data.discount,
+              });
+            }
+          } catch (err) {
+            setCouponInfo(null);
+            setCouponError("Unable to apply coupon. Please try again.");
+          } finally {
+            setCouponApplying(false);
+          }
+        }}
+        style={{
+          backgroundColor: "#a29a93",
+          color: "#e6e6e6",
+          borderRadius: "50px",
+          border: "none",
+          padding: "0.5rem 1rem",
+        }}
+      >
+        {couponApplying ? "Applying…" : "Apply"}
+      </Button>
+    </div>
+
+    {couponInfo && (
+      <p className="text-xs" style={{ color: "#28a745" }}>
+        Coupon “{couponCode}” applied.
+      </p>
+    )}
+    {couponError && (
+      <p className="text-xs text-destructive">{couponError}</p>
+    )}
+  </div>
+</div>
 
 <div className="mt-4">
   {/* Terms checkbox and label */}
@@ -1543,14 +1658,21 @@ function Step3ReviewPay(
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="w-full sm:w-auto"
-        >
-          Back
-        </Button>
+          <Button
+        type="button"
+        variant="outline"
+        onClick={onBack}
+        className="w-full sm:w-auto font-raleway"
+        style={{
+          backgroundColor: "#a29a93",
+          color: "#e6e6e6",
+          borderRadius: "50px",
+          border: "none",
+          padding: "0.5rem 1rem",
+        }}
+      >
+        Back
+      </Button>
 
 
    <Button

@@ -14,17 +14,17 @@ const config: Config = {
         // Keeps your brand's Acumin Pro as the default sans-serif
         sans: ['"Acumin Pro"', 'system-ui', 'sans-serif'],
         serif: ['"Acumin Pro"', 'system-ui', 'sans-serif'],
-        // ADD THIS: Matches the variable defined in your layout.tsx
+        // Existing Raleway variable
         raleway: ['var(--font-raleway)', 'sans-serif'],
+        // ADD THIS: Cinzel font from Google Fonts
+        cinzel: ['"Cinzel"', 'serif'],
       },
       colors: {
-        // ADD THIS: Custom Pantone Gray Palette
         pantone: {
-          warm: '#dbd5cd', // Approx. Warm Gray 1 C
-          cool: '#d9d9d6', // Approx. Cool Gray 1 C
-          'c-gray': '#888b8d', // Standard mid-tone Gray C
+          warm: '#dbd5cd',
+          cool: '#d9d9d6',
+          'c-gray': '#888b8d',
         },
-        // Existing Shadcn/UI HSL color variables
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -99,4 +99,5 @@ const config: Config = {
   },
   plugins: [require('tailwindcss-animate')],
 }
+
 export default config

@@ -8,6 +8,56 @@
   }
 }
 
+/* globals.css */
+
+/* Target the wrapper and the list container specifically */
+.react-international-phone-country-selector-dropdown,
+.react-international-phone-country-selector-dropdown__list {
+  background-color: #d0ccc9 !important;
+  background: #d0ccc9 !important; /* Double fallback */
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Fix the white background on the selected item */
+.react-international-phone-country-selector-dropdown__list-item--selected {
+  background-color: #a7a5a3 !important; 
+  color: #000 !important;
+}
+
+/* Hover state for items */
+.react-international-phone-country-selector-dropdown__list-item:hover {
+  background-color: #b9b6b3 !important;
+}
+
+/* --- SCROLLBAR STYLES --- */
+.react-international-phone-country-selector-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.react-international-phone-country-selector-dropdown::-webkit-scrollbar-track {
+  background: #d0ccc9 !important;
+}
+
+.react-international-phone-country-selector-dropdown::-webkit-scrollbar-thumb {
+  background-color: #a7a5a3 !important;
+  border-radius: 10px;
+  border: 2px solid #d0ccc9;
+}
+
+/* Firefox Support */
+.react-international-phone-country-selector-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #a7a5a3 #d0ccc9 !important;
+}
+
+
+
+
+
+
+
 @layer base {
   :root {
     /* Black & White palette */
