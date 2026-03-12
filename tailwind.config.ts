@@ -11,11 +11,20 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        // SEVEN brand: Acumin Pro as primary typeface
+        // Keeps your brand's Acumin Pro as the default sans-serif
         sans: ['"Acumin Pro"', 'system-ui', 'sans-serif'],
         serif: ['"Acumin Pro"', 'system-ui', 'sans-serif'],
+        // ADD THIS: Matches the variable defined in your layout.tsx
+        raleway: ['var(--font-raleway)', 'sans-serif'],
       },
       colors: {
+        // ADD THIS: Custom Pantone Gray Palette
+        pantone: {
+          warm: '#dbd5cd', // Approx. Warm Gray 1 C
+          cool: '#d9d9d6', // Approx. Cool Gray 1 C
+          'c-gray': '#888b8d', // Standard mid-tone Gray C
+        },
+        // Existing Shadcn/UI HSL color variables
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -74,20 +83,12 @@ const config: Config = {
       },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
       },
       animation: {

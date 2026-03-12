@@ -33,7 +33,7 @@ import 'react-international-phone/style.css';
 
 type Step = 1 | 2 | 3 |4;
 
-type Brand = "Seven" | "";
+type Brand = "Gray" | "";
 
 type Club = Location & { brand: Brand };
 
@@ -93,7 +93,7 @@ export default function MembershipPage() {
   const [email, setEmail] = useState("");
   const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
-  const [brandFilter, setBrandFilter] = useState<Brand>("Seven");
+  const [brandFilter, setBrandFilter] = useState<Brand>("Gray");
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isClubSheetOpen, setIsClubSheetOpen] = useState(false);
@@ -139,7 +139,7 @@ export default function MembershipPage() {
     {/* Background */}
     <div className="absolute inset-0">
       <img
-        src="/images/seven1.webp"
+        src="/images/gray1.webp"
         alt="Fitness training"
         className="w-full h-full object-cover"
       />
@@ -149,24 +149,23 @@ export default function MembershipPage() {
 
     {/* Content */}
     <div className="relative h-full px-12 py-16 flex flex-col justify-center max-w-xl">
-      <p className="text-xs tracking-[0.25em] uppercase mb-4 opacity-80">
-        Welcome to
+      <p className="text-xs tracking-[0.25em] uppercase mb-4 opacity-80 font-raleway">
+       Start Your Journey
       </p>
 
-      <h1 className="text-4xl leading-tight font-semibold mb-6">
-      SEVEN
+      <h1 className="text-1xl leading-tight font-raleway mb-6">
+     Gray is a wellness club for real life
         <br />
         {/* UNLOCK $500 IN VALUE */}
       </h1>
 
-      <p className="mb-4 text-sm">
-      For people who live deliberately.
+      
+
+      <p className="mb-4 text-sm font-raleway">
+       Experience movement, recovery, and nourishment in a calm, carefully designed environment. Our spaces bring together performance, restoration, and community to support your everyday wellbeing. Here, every detail is created to help you feel stronger in your body, clearer in your mind, and more present in your life.
    
       </p>
-      <p className="mb-4 text-sm">
-
-       Every day.
-      </p>
+  
 
     
 
@@ -188,7 +187,7 @@ export default function MembershipPage() {
       {/* Right: steps & forms */}
       <section className="flex-1 w-full min-w-0 flex flex-col px-3 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-14">
         {/* Step indicator */}
-        <div className="flex flex-wrap gap-3 sm:gap-6 lg:gap-8 text-xs font-medium tracking-[0.2em] sm:tracking-[0.25em] uppercase mb-6 sm:mb-10">
+        <div className="flex flex-wrap gap-3 sm:gap-6 lg:gap-8 text-xs font-medium font-raleway tracking-[0.2em] sm:tracking-[0.25em] uppercase mb-6 sm:mb-10">
           <StepPill index={1} label="Select Club" active={step === 1} />
           <StepPill index={2} label="Choose Membership" active={step === 2} />
           <StepPill index={3} label="Review and Pay" active={step === 3} />
@@ -349,9 +348,9 @@ function Step1SelectClub(
   // - "Dubai" or "Ibiza" => Seven
   // - everything else => Gray
   const allClubs: Club[] = locations.map((loc) => {
-    const name = (loc.name ?? loc.city ?? "").toLowerCase();
+    const name = (loc.name ?? "").toLowerCase();
     const derivedBrand: Brand =
-      name === "dubai" || name === "ibiza" ? "Seven" : "";
+      name === "gray dubai" ? "Gray" : "";
     return {
       ...loc,
       brand: derivedBrand,
@@ -359,7 +358,7 @@ function Step1SelectClub(
   });
 
   const filteredClubs: Club[] = allClubs.filter((club) =>
-    brandFilter === "Seven" ? club.brand === "Seven" : club.brand === "",
+    brandFilter === "Gray" ? club.brand === "Gray" : club.brand === "",
   );
 
   const emailTrimmed = email.trim();
@@ -485,14 +484,14 @@ function Step1SelectClub(
     }
   return (
     <div className="w-full max-w-none sm:max-w-2xl">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-2">
+      <h2 className="text-xl sm:text-2xl font-raleway mb-2">
        3 steps to begin.
       </h2>
-      <p className="text-sm text-muted-foreground mb-6 sm:mb-8">
+      <p className="text-sm text-muted-foreground mb-6 sm:mb-8 font-raleway">
         Share your details, then choose your club and membership.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 font-raleway">
         <div className="space-y-1">
           <Input
             placeholder="First Name"
@@ -524,7 +523,7 @@ function Step1SelectClub(
           )}
         </div>
       </div>
-      <div className="space-y-3 mb-4">
+      <div className="space-y-3 mb-4 font-raleway">
         <div className="space-y-1">
           <Input
             placeholder="Email"
@@ -543,7 +542,7 @@ function Step1SelectClub(
         </div>
 
 
-        <div className="space-y-1">
+        <div className="space-y-1 font-raleway">
 
            {/* Phone input */}
 
@@ -566,7 +565,7 @@ function Step1SelectClub(
             </p>
           )}
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1 font-raleway">
           <p className="text-xs font-medium text-muted-foreground">Gender</p>
           <div className="flex gap-2">
             <button
@@ -608,7 +607,7 @@ function Step1SelectClub(
               aria-invalid={!!clubError}
               aria-describedby={clubError ? "club-error" : undefined}
             >
-              <span>
+              <span className="font-raleway">
                 {selectedClub
                   ? `${selectedClub.name}`
                   : "Select a Club to Join"}
@@ -619,15 +618,15 @@ function Step1SelectClub(
           <SheetContent side="right" className="w-full sm:max-w-lg">
             <SheetHeader className="mb-6">
               <SheetTitle className="sr-only">Select a club</SheetTitle>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground font-raleway">
                 Choose your ideal home base. If you&apos;re torn between a few,
                 a membership advisor can help you find a perfect fit.
               </p>
             </SheetHeader>
 
             {/* Brand pills – purely frontend filter */}
-            <div className="flex gap-2 mb-5">
-              {(["Seven"] as Brand[]).map((brand) => (
+            <div className="flex gap-2 mb-5 font-raleway">
+              {(["Gray"] as Brand[]).map((brand) => (
                 <button
                   key={brand}
                   type="button"
@@ -638,7 +637,7 @@ function Step1SelectClub(
                       : "border-border text-foreground hover:bg-muted"
                   }`}
                 >
-                  {brand?.toUpperCase()}
+                  {brand}
 
                 </button>
               ))}
@@ -669,12 +668,12 @@ function Step1SelectClub(
                     className="w-full flex items-center justify-between border border-border rounded-md px-4 py-3 text-left hover:border-foreground transition-colors"
                   >
                     <div>
-                      <p className="text-sm font-medium">{club.name}</p>
+                      <p className="text-sm font-medium font-raleway">{club.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {/* {[club.city, club.country].filter(Boolean).join(", ")} */}
                       </p>
                     </div>
-                    <span className="text-xs font-medium border px-3 py-1 rounded-full">
+                    <span className="text-xs font-medium border px-3 py-1 rounded-full font-raleway">
                       Select
                     </span>
                   </button>
@@ -691,7 +690,7 @@ function Step1SelectClub(
   
         {otpSent && !otpVerified && (
           <div className="flex w-full items-start gap-2 mt-4">
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-1 font-raleway">
               <Input
                 placeholder="Enter 6-digit OTP"
                 value={otp}
@@ -704,7 +703,7 @@ function Step1SelectClub(
             <Button
               type="button"
               onClick={verifyOtpBeforeContact}
-              className="h-11 px-6 font-semibold shadow-sm"
+              className="h-11 px-6 font-semibold shadow-sm font-raleway"
               disabled={otp.length < 6 || creatingContact}
             >
               {creatingContact ? "Verifying..." : "Verify OTP"}
@@ -716,7 +715,7 @@ function Step1SelectClub(
 
       <Button
         type="button"
-        className="mt-6 w-full h-11 min-h-[44px]"
+        className="mt-6 w-full h-11 min-h-[44px] font-raleway"
         disabled={creatingContact || otpSent}
         onClick={() => {
         setAttempted(true); // ✅ trigger validation errors
@@ -736,7 +735,7 @@ function Step1SelectClub(
         <p className="mt-3 text-xs text-destructive">{contactError}</p>
       )}
 
-      <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground font-raleway">
        By continuing, you agree to receive updates about membership, services, and events.
       </p>
     </div>
@@ -924,7 +923,7 @@ const allPlans: Plan[] =
   );
 
   return (
-    <div className="w-full max-w-none sm:max-w-2xl">
+    <div className="w-full max-w-none sm:max-w-2xl font-raleway">
       <h2 className="text-xl sm:text-2xl font-semibold mb-2">
         Choose Membership
       </h2>
@@ -959,7 +958,7 @@ const allPlans: Plan[] =
             }
             return (
               <>
-                <div className="space-y-4">
+                <div className="space-y-4 font-raleway">
                   {visibleDubaiPlans.map((plan) => (
                     <button
                       key={plan.id}
@@ -1147,13 +1146,13 @@ const allPlans: Plan[] =
           type="button"
           variant="outline"
           onClick={onBack}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto font-raleway"
         >
           Back
         </Button>
         <Button
           type="button"
-          className="w-full sm:flex-1 min-h-[44px]"
+          className="w-full sm:flex-1 min-h-[44px] font-raleway"
           disabled={!isValid || isLoading || isError}
           onClick={onNext}
         >
@@ -1221,7 +1220,7 @@ function Step3ReviewPay(
 
   if (completed) {
     return (
-      <div className="max-w-md space-y-4">
+      <div className="max-w-md space-y-4 font-raleway">
         <div>
           <h2 className="text-2xl font-semibold mb-1">You&apos;re all set.</h2>
           <p className="text-sm text-muted-foreground">
@@ -1346,7 +1345,7 @@ function Step3ReviewPay(
    return (
   
 
-  <div className="w-full max-w-none sm:max-w-3xl space-y-6">
+  <div className="w-full max-w-none sm:max-w-3xl space-y-6 font-raleway">
    <div className="space-y-1">
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
         Step 3 of 3
