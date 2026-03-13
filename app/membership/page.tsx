@@ -48,7 +48,7 @@ interface Plan {
   duration?: "Annual" | "Pass";
   tax_percentage?: number; // ✅ add this
   number_of_days?: number; // ✅ add this
-  planType?:"";
+  planType:string;
 }
 
 type Gender = "male" | "female" | null;
@@ -908,32 +908,68 @@ const allPlans: Plan[] =
     }
 
     // Calculate priceLabel
+    // let priceLabel = "";
+    // if (duration === "Annual") {
+    //   const monthly = Math.round((m.price / 12) * 100) / 100;
+    //   priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
+    //     minimumFractionDigits: 2,
+    //     maximumFractionDigits: 2,
+    //   })} /month`;
+    // } else if (duration === "Pass") {
+    //   if (number_of_days === 1) {
+    //     priceLabel = `${m.currency} ${m.price.toLocaleString(undefined, {
+    //       minimumFractionDigits: 2,
+    //       maximumFractionDigits: 2,
+    //     })} /day`;
+    //   } else if (number_of_days === 7) {
+    //     priceLabel = `${m.currency} ${m.price.toLocaleString(undefined, {
+    //       minimumFractionDigits: 2,
+    //       maximumFractionDigits: 2,
+    //     })} /week`;
+    //   } else {
+    //     const months = number_of_days / 30; // 30→1, 90→3, 180→6
+    //     const monthly = Math.round((m.price / months) * 100) / 100;
+    //     priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
+    //       minimumFractionDigits: 2,
+    //       maximumFractionDigits: 2,
+    //     })} /month`;
+    //   }
+
     let priceLabel = "";
-    if (duration === "Annual") {
-      const monthly = Math.round((m.price / 12) * 100) / 100;
-      priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })} /month`;
-    } else if (duration === "Pass") {
-      if (number_of_days === 1) {
-        priceLabel = `${m.currency} ${m.price.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} /day`;
-      } else if (number_of_days === 7) {
-        priceLabel = `${m.currency} ${m.price.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} /week`;
-      } else {
-        const months = number_of_days / 30; // 30→1, 90→3, 180→6
-        const monthly = Math.round((m.price / months) * 100) / 100;
-        priceLabel = `${m.currency} ${monthly.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })} /month`;
-      }
+
+if (duration === "Annual") {
+  const monthly = Math.ceil(m.price / 12); // round up, no decimals
+
+  priceLabel = `${m.currency} ${monthly.toLocaleString()} /month`;
+
+} else if (duration === "Pass") {
+
+  if (number_of_days === 1) {
+
+    priceLabel = `${m.currency} ${Math.ceil(m.price).toLocaleString()} /day`;
+
+  } else if (number_of_days === 7) {
+
+    priceLabel = `${m.currency} ${Math.ceil(m.price).toLocaleString()} /week`;
+
+  } else if (number_of_days === 90) {
+
+    // do not divide
+    priceLabel = `${m.currency} ${Math.ceil(m.price).toLocaleString()} /3 months`;
+
+  } else if (number_of_days === 180) {
+
+    // do not divide
+    priceLabel = `${m.currency} ${Math.ceil(m.price).toLocaleString()} /6 months`;
+
+  } else {
+
+    const months = number_of_days / 30;
+    const monthly = Math.ceil(m.price / months); // round up only
+
+    priceLabel = `${m.currency} ${monthly.toLocaleString()} /month`;
+  }
+
     }
 
     return {
