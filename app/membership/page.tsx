@@ -1703,7 +1703,7 @@ function Step3ReviewPay(
     <label htmlFor="terms" className="text-sm text-gray-700">
       I understand and accept the{" "}
       <a
-        href="https://seven.club/legal"
+        href="https://www.graywellness.com/legal"
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 underline"
